@@ -44,6 +44,9 @@ class AStealth_PrototypeCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* LookAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* CrouchAction;
+
 public:
 	AStealth_PrototypeCharacter();
 	
@@ -56,6 +59,9 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 			
+	void OnCrouchActionStarted(const FInputActionValue& Value);
+
+	void OnCrouchActionEnded(const FInputActionValue& Value);
 
 protected:
 	// APawn interface

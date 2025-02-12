@@ -86,6 +86,10 @@ void AStealth_PrototypeCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 
 		// Looking
 		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &AStealth_PrototypeCharacter::Look);
+
+		// Crouching
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &AStealth_PrototypeCharacter::OnCrouchActionStarted);
+		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AStealth_PrototypeCharacter::OnCrouchActionEnded);
 	}
 	else
 	{
@@ -127,4 +131,17 @@ void AStealth_PrototypeCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void AStealth_PrototypeCharacter::OnCrouchActionStarted(const FInputActionValue& Value)
+{
+	ACharacter* Character = this;
+	Character->Crouch();
+
+}
+
+void AStealth_PrototypeCharacter::OnCrouchActionEnded(const FInputActionValue& Value)
+{
+	ACharacter* Character = this;
+	Character->UnCrouch();
 }
