@@ -13,6 +13,16 @@ class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
 
+
+
+UENUM(BlueprintType)
+enum class EFoot : uint8
+{
+	Left UMETA(DisplayName = "Left"),
+	Right UMETA(DislayName = "Right")
+
+};
+
 DECLARE_LOG_CATEGORY_EXTERN(LogTemplateCharacter, Log, All);
 
 UCLASS(config=Game)
@@ -63,6 +73,9 @@ protected:
 
 	void OnCrouchActionEnded(const FInputActionValue& Value);
 
+	UPROPERTY(BlueprintReadOnly)
+	class UFootstep_Component* FootstepsComponent;
+
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -75,5 +88,7 @@ public:
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	class UFootstep_Component* GetFootstepComponent() const;
 };
 

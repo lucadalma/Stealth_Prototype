@@ -11,6 +11,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "InputActionValue.h"
 
+#include "Footstep_Component.h"
+
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
 //////////////////////////////////////////////////////////////////////////
@@ -49,6 +51,9 @@ AStealth_PrototypeCharacter::AStealth_PrototypeCharacter()
 	FollowCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("FollowCamera"));
 	FollowCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName); // Attach the camera to the end of the boom and let the boom adjust to match the controller orientation
 	FollowCamera->bUsePawnControlRotation = false; // Camera does not rotate relative to arm
+
+
+	FootstepsComponent = CreateDefaultSubobject<UFootstep_Component>(TEXT("FootstepComponent"));
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
@@ -131,6 +136,11 @@ void AStealth_PrototypeCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+UFootstep_Component* AStealth_PrototypeCharacter::GetFootstepComponent() const
+{
+	return FootstepsComponent;
 }
 
 void AStealth_PrototypeCharacter::OnCrouchActionStarted(const FInputActionValue& Value)
