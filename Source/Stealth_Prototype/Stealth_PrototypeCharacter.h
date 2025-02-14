@@ -30,6 +30,11 @@ class AStealth_PrototypeCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
+	UPROPERTY(EditDefaultsOnly, Category = "Stats")
+	float MaxHealth = 100;
+	UPROPERTY(VisibleAnywhere, Category = "Stats")
+	float CurrentHealth;
+
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	USpringArmComponent* CameraBoom;
@@ -60,6 +65,9 @@ class AStealth_PrototypeCharacter : public ACharacter
 public:
 	AStealth_PrototypeCharacter();
 	
+	UFUNCTION(BlueprintPure)
+	bool IsDead() const;
+
 
 protected:
 

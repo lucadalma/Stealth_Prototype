@@ -155,3 +155,8 @@ void AStealth_PrototypeCharacter::OnCrouchActionEnded(const FInputActionValue& V
 	ACharacter* Character = this;
 	Character->UnCrouch();
 }
+
+bool AStealth_PrototypeCharacter::IsDead() const
+{
+	return CurrentHealth <= 0;
+}
