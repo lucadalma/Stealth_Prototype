@@ -8,6 +8,17 @@ public class Stealth_Prototype : ModuleRules
 	{
 		PCHUsage = PCHUsageMode.UseExplicitOrSharedPCHs;
 
-		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "EnhancedInput" });
+		PublicDependencyModuleNames.AddRange(new string[] 
+		{
+			"Core", 
+			"CoreUObject", 
+			"Engine", 
+			"InputCore", 
+			"HeadMountedDisplay",
+			"EnhancedInput", 
+			"NavigationSystem", 
+			"GameplayTasks",
+			"AIModule"
+		});
 	}
 }

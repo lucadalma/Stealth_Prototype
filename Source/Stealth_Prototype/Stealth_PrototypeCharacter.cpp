@@ -12,6 +12,8 @@
 #include "InputActionValue.h"
 
 #include "Footstep_Component.h"
+#include "Perception/AIPerceptionStimuliSourceComponent.h"
+#include "Perception/AISense_Sight.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -57,6 +59,8 @@ AStealth_PrototypeCharacter::AStealth_PrototypeCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+	SetupStimulusSource();
 }
 
 void AStealth_PrototypeCharacter::BeginPlay()
@@ -141,6 +145,16 @@ void AStealth_PrototypeCharacter::Look(const FInputActionValue& Value)
 UFootstep_Component* AStealth_PrototypeCharacter::GetFootstepComponent() const
 {
 	return FootstepsComponent;
+}
+
+void AStealth_PrototypeCharacter::SetupStimulusSource()
+{
+	StimulusSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("Stimulus"));
+	if (StimulusSource) 
+	{
+		StimulusSource->RegisterForSense(TSubclassOf<UAISense_Sight>());
+		StimulusSource->RegisterWithPerceptionSystem();
+	}
 }
 
 void AStealth_PrototypeCharacter::OnCrouchActionStarted(const FInputActionValue& Value)
