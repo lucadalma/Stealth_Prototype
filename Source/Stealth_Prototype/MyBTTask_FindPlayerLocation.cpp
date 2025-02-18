@@ -7,7 +7,8 @@
 #include "GameFramework/Character.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
-UMyBTTask_FindPlayerLocation::UMyBTTask_FindPlayerLocation(FObjectInitializer const& ObjectInitializer)
+UMyBTTask_FindPlayerLocation::UMyBTTask_FindPlayerLocation(FObjectInitializer const& ObjectInitializer) :
+	UBTTask_BlackboardBase{ ObjectInitializer }
 {
 	NodeName = TEXT("Find Player Location");
 }
