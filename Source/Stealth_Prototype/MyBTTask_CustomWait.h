@@ -1,0 +1,23 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "BehaviorTree/Tasks/BTTask_BlackboardBase.h"
+#include "MyBTTask_CustomWait.generated.h"
+
+/**
+ * 
+ */
+UCLASS()
+class STEALTH_PROTOTYPE_API UMyBTTask_CustomWait : public UBTTask_BlackboardBase
+{
+	GENERATED_BODY()
+
+
+public:
+	UMyBTTask_CustomWait();
+
+protected:
+	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+};

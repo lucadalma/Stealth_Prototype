@@ -5,6 +5,8 @@
 #include "Stealth_PrototypeCharacter.h"
 #include "Stealth_PhysicalMaterial.h"
 #include "Kismet/GameplayStatics.h"
+#include "GameFramework/Actor.h"
+#include "Perception/AISense_Hearing.h"
 
 static TAutoConsoleVariable<int32> CVarShowFootsteps(
 	TEXT("ShowDebugFootsteps"),
@@ -34,7 +36,7 @@ void UFootstep_Component::BeginPlay()
 }
 
 
-void UFootstep_Component::HandleFootstep(EFoot Foot)
+void UFootstep_Component::HandleFootstep(EFoot Foot, float Loudness, float MaxRange)
 {
 	if (AStealth_PrototypeCharacter* Character = Cast<AStealth_PrototypeCharacter>(GetOwner()))
 	{
@@ -65,6 +67,13 @@ void UFootstep_Component::HandleFootstep(EFoot Foot)
 						if (PhysicalMaterial)
 						{
 							UGameplayStatics::PlaySoundAtLocation(this, PhysicalMaterial->FootStepSound, Location, 1.f);
+
+							if (Mesh && Mesh->GetOwner())
+							{
+								AActor* Instigator = Mesh->GetOwner();
+
+								UAISense_Hearing::ReportNoiseEvent(Instigator->GetWorld(), Instigator->GetActorLocation(), Loudness, Instigator, MaxRange);
+							}
 
 							if (DebugShowFootsteps > 0)
 							{

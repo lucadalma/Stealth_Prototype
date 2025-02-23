@@ -17,6 +17,12 @@ class STEALTH_PROTOTYPE_API UAnimNotify_Step : public UAnimNotify
 	
 public:
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	float Loudness = 1.0f;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
+	float MaxRange = 1000.0f;
+
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
 
 	UPROPERTY(EditAnywhere)

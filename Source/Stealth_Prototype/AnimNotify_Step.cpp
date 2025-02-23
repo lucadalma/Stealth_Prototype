@@ -3,10 +3,13 @@
 
 #include "AnimNotify_Step.h"
 #include "Footstep_Component.h"
+#include "GameFramework/Actor.h"
+#include "Perception/AISense_Hearing.h"
 
 void UAnimNotify_Step::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation)
 {
 	Super::Notify(MeshComp, Animation);
+
 
 	check(MeshComp);
 
@@ -16,7 +19,7 @@ void UAnimNotify_Step::Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBas
 	{
 		if (UFootstep_Component* FootstepsComp = Character->GetFootstepComponent())
 		{
-			FootstepsComp->HandleFootstep(Foot);
+			FootstepsComp->HandleFootstep(Foot, Loudness, MaxRange);
 		}
 	}
 }

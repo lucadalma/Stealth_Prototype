@@ -29,7 +29,7 @@ protected:
 
 public:	
 
-	void HandleFootstep(EFoot Foot);
+	void HandleFootstep(EFoot Foot, float Loudness, float MaxRange);
 
 		
 };
