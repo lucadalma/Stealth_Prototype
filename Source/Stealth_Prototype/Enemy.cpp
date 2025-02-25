@@ -2,6 +2,8 @@
 
 
 #include "Enemy.h"
+#include "Components/BoxComponent.h"
+#include "Stealth_PrototypeCharacter.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -9,12 +11,31 @@ AEnemy::AEnemy()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	PunchCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("PunchCollisionBox"));
+
+	if (PunchCollisionBox) 
+	{
+		PunchCollisionBox->SetBoxExtent({ 5.f,5.f,5.f }, false);
+		FAttachmentTransformRules const Rules{
+			EAttachmentRule::SnapToTarget,
+			EAttachmentRule::SnapToTarget,
+			EAttachmentRule::KeepWorld,
+			false };
+
+		PunchCollisionBox->AttachToComponent(GetMesh(), Rules, "hand_r_socket");
+		PunchCollisionBox->SetRelativeLocation({ -7.f, 0.f, 0.f });
+		
+	}
+
 }
 
 // Called when the game starts or when spawned
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	PunchCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnAttackOverlapBegin);
+	PunchCollisionBox->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnAttackOverlapEnd);
+
 	
 }
 
@@ -40,5 +61,51 @@ UBehaviorTree* AEnemy::GetBehaviorTree() const
 APatrolPath* AEnemy::GetPatrolPath() const
 {
 	return PatrolPath;
+}
+
+UAnimMontage* AEnemy::GetMontage() const
+{
+	return Montage;
+}
+
+void AEnemy::AttackStart()
+{
+	PunchCollisionBox->SetCollisionProfileName("Fist");
+	PunchCollisionBox->SetNotifyRigidBodyCollision(true);
+}
+
+void AEnemy::AttackEnd() 
+{
+	PunchCollisionBox->SetCollisionProfileName("Fist");
+	PunchCollisionBox->SetNotifyRigidBodyCollision(false);
+}
+
+int AEnemy::MeleeAttack_Implementation()
+{
+	if (Montage) 
+	{
+		PlayAnimMontage(Montage);
+	}
+
+	return 0;
+}
+
+void AEnemy::OnAttackOverlapBegin(UPrimitiveComponent* const OverlappedComponent, AActor* const OtherActor, UPrimitiveComponent* const OtherComponent, int const OtherBodyIndex, bool const FromSweep, FHitResult const& SweepResult)
+{
+	if (OtherActor == this)
+	{
+		return;
+	}
+
+	if (auto const Player = Cast<AStealth_PrototypeCharacter>(OtherActor)) 
+	{
+		auto const NewHealth = Player->GetHealth() - 5;
+		Player->SetHealth(NewHealth);
+	}
+}
+
+void AEnemy::OnAttackOverlapEnd(UPrimitiveComponent* const OverlappedComponent, AActor* const OtherActor, UPrimitiveComponent* OtherComponent, int const OtherBodyIndex)
+{
+
 }
 

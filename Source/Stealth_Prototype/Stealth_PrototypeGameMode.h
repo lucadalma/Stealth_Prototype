@@ -13,6 +13,13 @@ class AStealth_PrototypeGameMode : public AGameModeBase
 
 public:
 	AStealth_PrototypeGameMode();
+
+
+public:
+	void PawnKilled(APawn* PawnKilled);
+
+private:
+	void EndGame(bool bIsPlayerWinner);
 };
 
 

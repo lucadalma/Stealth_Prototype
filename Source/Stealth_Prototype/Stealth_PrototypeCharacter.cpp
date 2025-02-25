@@ -76,6 +76,8 @@ void AStealth_PrototypeCharacter::BeginPlay()
 			Subsystem->AddMappingContext(DefaultMappingContext, 0);
 		}
 	}
+
+	SetHealth(MaxHealth);
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -147,6 +149,22 @@ UFootstep_Component* AStealth_PrototypeCharacter::GetFootstepComponent() const
 	return FootstepsComponent;
 }
 
+float AStealth_PrototypeCharacter::GetHealth() const
+{
+	return Health;
+}
+
+float AStealth_PrototypeCharacter::GetMaxHealth() const
+{
+	return MaxHealth;
+}
+
+void AStealth_PrototypeCharacter::SetHealth(float const NewHealth)
+{
+	Health = NewHealth;
+	
+}
+
 void AStealth_PrototypeCharacter::SetupStimulusSource()
 {
 	StimulusSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("Stimulus"));
@@ -172,5 +190,5 @@ void AStealth_PrototypeCharacter::OnCrouchActionEnded(const FInputActionValue& V
 
 bool AStealth_PrototypeCharacter::IsDead() const
 {
-	return CurrentHealth <= 0;
+	return Health <= 0;
 }

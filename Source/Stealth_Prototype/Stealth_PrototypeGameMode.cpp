@@ -3,6 +3,7 @@
 #include "Stealth_PrototypeGameMode.h"
 #include "Stealth_PrototypeCharacter.h"
 #include "UObject/ConstructorHelpers.h"
+#include "EngineUtils.h"
 
 AStealth_PrototypeGameMode::AStealth_PrototypeGameMode()
 {
@@ -11,5 +12,25 @@ AStealth_PrototypeGameMode::AStealth_PrototypeGameMode()
 	if (PlayerPawnBPClass.Class != NULL)
 	{
 		DefaultPawnClass = PlayerPawnBPClass.Class;
+	}
+}
+
+
+void AStealth_PrototypeGameMode::PawnKilled(APawn* PawnKilled)
+{
+
+	APlayerController* PlayerController = Cast<APlayerController>(PawnKilled->GetController());
+	if (PlayerController != nullptr)
+	{
+		EndGame(false);
+	}
+}
+
+void AStealth_PrototypeGameMode::EndGame(bool bIsPlayerWinner)
+{
+	for (AController* Controller : TActorRange<AController>(GetWorld()))
+	{
+		bool bIsWinner = Controller->IsPlayerController() == bIsPlayerWinner;
+		Controller->GameHasEnded(Controller->GetPawn(), bIsWinner);
 	}
 }

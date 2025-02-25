@@ -33,7 +33,7 @@ class AStealth_PrototypeCharacter : public ACharacter
 	UPROPERTY(EditDefaultsOnly, Category = "Stats")
 	float MaxHealth = 100;
 	UPROPERTY(VisibleAnywhere, Category = "Stats")
-	float CurrentHealth;
+	float Health;
 
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -98,6 +98,10 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 	class UFootstep_Component* GetFootstepComponent() const;
+
+	float GetHealth() const;
+	float GetMaxHealth() const;
+	void SetHealth(float const NewHealth);
 
 private:
 	class UAIPerceptionStimuliSourceComponent* StimulusSource;
