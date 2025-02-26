@@ -70,5 +70,13 @@ private:
 		UPrimitiveComponent* OtherComponent,
 		int const OtherBodyIndex);
 
+private:
+	UPROPERTY(EditDefaultsOnly, Category = "Animation")
+	UAnimMontage* DeathMontage;
+
+public:
+	void PlayDeathAnimation();
+	void EnableRagdoll();
+
 
 };

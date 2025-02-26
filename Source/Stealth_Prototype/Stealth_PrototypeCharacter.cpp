@@ -9,11 +9,13 @@
 #include "GameFramework/Controller.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "InputActionValue.h"
-
+#include "Enemy.h"
 #include "Footstep_Component.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
+#include "StealthAIController.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -101,6 +103,8 @@ void AStealth_PrototypeCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 		// Crouching
 		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &AStealth_PrototypeCharacter::OnCrouchActionStarted);
 		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AStealth_PrototypeCharacter::OnCrouchActionEnded);
+	
+		EnhancedInputComponent->BindAction(StealthKillAction, ETriggerEvent::Started, this, &AStealth_PrototypeCharacter::PerformStealthKill);
 	}
 	else
 	{
@@ -191,4 +195,95 @@ void AStealth_PrototypeCharacter::OnCrouchActionEnded(const FInputActionValue& V
 bool AStealth_PrototypeCharacter::IsDead() const
 {
 	return Health <= 0;
+}
+
+void AStealth_PrototypeCharacter::FindStealthKillTarget()
+{
+	FVector PlayerLocation = GetActorLocation();
+	float SearchRadius = 200.f;
+
+	// Definisce i parametri per il Trace
+	FCollisionQueryParams QueryParams;
+	QueryParams.AddIgnoredActor(this);
+
+	// Lista di attori colpiti
+	TArray<FOverlapResult> Overlaps;
+	GetWorld()->OverlapMultiByChannel(Overlaps, PlayerLocation, FQuat::Identity,
+		ECC_Pawn, FCollisionShape::MakeSphere(SearchRadius), QueryParams);
+
+	TargetEnemy = nullptr;
+	float ClosestDistance = FLT_MAX;
+
+	for (const FOverlapResult& Result : Overlaps)
+	{
+		AEnemy* Enemy = Cast<AEnemy>(Result.GetActor());
+		if (Enemy)
+		{
+			float Distance = FVector::Dist(PlayerLocation, Enemy->GetActorLocation());
+			if (Distance < ClosestDistance)
+			{
+				TargetEnemy = Enemy;
+				ClosestDistance = Distance;
+			}
+		}
+	}
+}
+
+void AStealth_PrototypeCharacter::PerformStealthKill()
+{
+	if (bIsPerformingStealthKill) return; // Evita di ripetere l'animazione
+	bIsPerformingStealthKill = true; // Blocca nuove kill finché l'animazione non finisce
+
+	FindStealthKillTarget();
+
+	if (!TargetEnemy)
+	{
+		bIsPerformingStealthKill = false;
+		return;
+	}
+
+	AStealthAIController* AIController = Cast<AStealthAIController>(TargetEnemy->GetController());
+	if (!AIController) return;
+
+	UBlackboardComponent* BlackboardComp = AIController->GetBlackboardComponent();
+	if (!BlackboardComp) return;
+
+	bool bCanSeePlayer = BlackboardComp->GetValueAsBool("CanSeePlayer");
+	if (bCanSeePlayer)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("L'IA ti sta vedendo! Stealth Kill non eseguita."));
+		bIsPerformingStealthKill = false;
+		return;
+	}
+
+	// Blocca il movimento del giocatore e del nemico
+	TargetEnemy->GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->DisableMovement();
+
+	// Riproduce animazione di Stealth Kill per il giocatore
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && StealthKillMontage)
+	{
+		AnimInstance->Montage_Play(StealthKillMontage);
+	}
+
+	// Riproduce animazione di morte del nemico
+	TargetEnemy->PlayDeathAnimation();
+
+	// Timer per completare la kill e riattivare il controllo
+	FTimerHandle TimerHandle;
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AStealth_PrototypeCharacter::FinishStealthKill, 5.f, false);
+}
+
+
+void AStealth_PrototypeCharacter::FinishStealthKill()
+{
+	if (TargetEnemy)
+	{
+		TargetEnemy->EnableRagdoll();
+		TargetEnemy = nullptr;
+	}
+
+	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
+	bIsPerformingStealthKill = false; // Ora si può eseguire un'altra kill
 }

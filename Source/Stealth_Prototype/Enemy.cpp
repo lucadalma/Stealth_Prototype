@@ -109,3 +109,33 @@ void AEnemy::OnAttackOverlapEnd(UPrimitiveComponent* const OverlappedComponent, 
 
 }
 
+void AEnemy::PlayDeathAnimation()
+{
+	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
+	if (AnimInstance && DeathMontage)
+	{
+		AnimInstance->Montage_Play(DeathMontage);
+
+		// Timer per attivare il ragdoll dopo l'animazione
+		FTimerHandle TimerHandle;
+		GetWorldTimerManager().SetTimer(TimerHandle, this, &AEnemy::EnableRagdoll, 3.f, false);
+	}
+	else
+	{
+		EnableRagdoll(); // Se non c'è animazione, attiva subito il ragdoll
+	}
+}
+
+void AEnemy::EnableRagdoll()
+{
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+
+	// Se il nemico ha un AI Controller, disabilitalo
+	AController* EnemyController = GetController();
+	if (EnemyController)
+	{
+		EnemyController->Destroy();
+	}
+}
+

@@ -12,6 +12,7 @@ class UCameraComponent;
 class UInputMappingContext;
 class UInputAction;
 struct FInputActionValue;
+class Enemy;
 
 
 
@@ -62,11 +63,18 @@ class AStealth_PrototypeCharacter : public ACharacter
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* CrouchAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
+	UInputAction* StealthKillAction;
+
 public:
 	AStealth_PrototypeCharacter();
 	
 	UFUNCTION(BlueprintPure)
 	bool IsDead() const;
+
+private:
+	bool bIsPerformingStealthKill = false;
+
 
 
 protected:
@@ -107,5 +115,16 @@ private:
 	class UAIPerceptionStimuliSourceComponent* StimulusSource;
 
 	void SetupStimulusSource();
+
+private:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stealth", meta = (AllowPrivateAccess = "true"))
+	class AEnemy* TargetEnemy;
+
+	UPROPERTY(EditDefaultsOnly, Category = "Stealth")
+	class UAnimMontage* StealthKillMontage;
+
+	void FindStealthKillTarget();
+	void PerformStealthKill();
+	void FinishStealthKill();
 };
 
