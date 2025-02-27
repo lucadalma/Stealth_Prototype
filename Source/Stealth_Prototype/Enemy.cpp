@@ -4,16 +4,17 @@
 #include "Enemy.h"
 #include "Components/BoxComponent.h"
 #include "Stealth_PrototypeCharacter.h"
+#include "Components/CapsuleComponent.h"
 
 // Sets default values
 AEnemy::AEnemy()
 {
- 	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	PunchCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("PunchCollisionBox"));
 
-	if (PunchCollisionBox) 
+	if (PunchCollisionBox)
 	{
 		PunchCollisionBox->SetBoxExtent({ 5.f,5.f,5.f }, false);
 		FAttachmentTransformRules const Rules{
@@ -24,7 +25,7 @@ AEnemy::AEnemy()
 
 		PunchCollisionBox->AttachToComponent(GetMesh(), Rules, "hand_r_socket");
 		PunchCollisionBox->SetRelativeLocation({ -7.f, 0.f, 0.f });
-		
+
 	}
 
 }
@@ -36,7 +37,7 @@ void AEnemy::BeginPlay()
 	PunchCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnAttackOverlapBegin);
 	PunchCollisionBox->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnAttackOverlapEnd);
 
-	
+
 }
 
 // Called every frame
@@ -74,7 +75,7 @@ void AEnemy::AttackStart()
 	PunchCollisionBox->SetNotifyRigidBodyCollision(true);
 }
 
-void AEnemy::AttackEnd() 
+void AEnemy::AttackEnd()
 {
 	PunchCollisionBox->SetCollisionProfileName("Fist");
 	PunchCollisionBox->SetNotifyRigidBodyCollision(false);
@@ -82,7 +83,7 @@ void AEnemy::AttackEnd()
 
 int AEnemy::MeleeAttack_Implementation()
 {
-	if (Montage) 
+	if (Montage)
 	{
 		PlayAnimMontage(Montage);
 	}
@@ -97,7 +98,7 @@ void AEnemy::OnAttackOverlapBegin(UPrimitiveComponent* const OverlappedComponent
 		return;
 	}
 
-	if (auto const Player = Cast<AStealth_PrototypeCharacter>(OtherActor)) 
+	if (auto const Player = Cast<AStealth_PrototypeCharacter>(OtherActor))
 	{
 		auto const NewHealth = Player->GetHealth() - 5;
 		Player->SetHealth(NewHealth);
@@ -119,10 +120,13 @@ void AEnemy::PlayDeathAnimation()
 		// Timer per attivare il ragdoll dopo l'animazione
 		FTimerHandle TimerHandle;
 		GetWorldTimerManager().SetTimer(TimerHandle, this, &AEnemy::EnableRagdoll, 3.f, false);
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+
 	}
 	else
 	{
 		EnableRagdoll(); // Se non c'è animazione, attiva subito il ragdoll
+		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 }
 

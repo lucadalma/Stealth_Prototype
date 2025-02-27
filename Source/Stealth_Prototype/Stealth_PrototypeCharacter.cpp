@@ -197,6 +197,7 @@ bool AStealth_PrototypeCharacter::IsDead() const
 	return Health <= 0;
 }
 
+
 void AStealth_PrototypeCharacter::FindStealthKillTarget()
 {
 	FVector PlayerLocation = GetActorLocation();
@@ -229,15 +230,40 @@ void AStealth_PrototypeCharacter::FindStealthKillTarget()
 	}
 }
 
+bool AStealth_PrototypeCharacter::IsBehindEnemy(AEnemy* targetEnemy)
+{
+	if (!targetEnemy) return false;
+
+	// Direzione in cui il nemico sta guardando (normalizzata)
+	FVector EnemyForward = targetEnemy->GetActorForwardVector().GetSafeNormal();
+
+	// Direzione dal nemico verso il giocatore (normalizzata)
+	FVector ToPlayer = (GetActorLocation() - targetEnemy->GetActorLocation()).GetSafeNormal();
+
+	// Calcola il prodotto scalare tra i due vettori
+	float DotProduct = FVector::DotProduct(EnemyForward, ToPlayer);
+
+	// Se il DotProduct è minore di -0.7, il player è dietro (180° = -1, 90° = 0)
+	return DotProduct < -0.7f;
+}
+
 void AStealth_PrototypeCharacter::PerformStealthKill()
 {
-	if (bIsPerformingStealthKill) return; // Evita di ripetere l'animazione
-	bIsPerformingStealthKill = true; // Blocca nuove kill finché l'animazione non finisce
+	if (bIsPerformingStealthKill) return;
+	bIsPerformingStealthKill = true;
 
 	FindStealthKillTarget();
 
 	if (!TargetEnemy)
 	{
+		bIsPerformingStealthKill = false;
+		return;
+	}
+
+	// Controllo se il player è dietro al nemico
+	if (!IsBehindEnemy(TargetEnemy))
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Devi essere dietro al nemico per eseguire la stealth kill!"));
 		bIsPerformingStealthKill = false;
 		return;
 	}
@@ -260,6 +286,9 @@ void AStealth_PrototypeCharacter::PerformStealthKill()
 	TargetEnemy->GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->DisableMovement();
 
+	FRotator LookAtRotation = (TargetEnemy->GetActorLocation() - GetActorLocation()).Rotation();
+	SetActorRotation(FRotator(0.f, LookAtRotation.Yaw, 0.f)); // Mantieni solo la rotazione Yaw
+
 	// Riproduce animazione di Stealth Kill per il giocatore
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && StealthKillMontage)
@@ -276,6 +305,7 @@ void AStealth_PrototypeCharacter::PerformStealthKill()
 }
 
 
+
 void AStealth_PrototypeCharacter::FinishStealthKill()
 {
 	if (TargetEnemy)
@@ -283,6 +313,9 @@ void AStealth_PrototypeCharacter::FinishStealthKill()
 		TargetEnemy->EnableRagdoll();
 		TargetEnemy = nullptr;
 	}
+
+	FVector FinalPosition = GetMesh()->GetComponentLocation();
+	SetActorLocation(FinalPosition, true); // Il secondo parametro evita collisioni indesiderate
 
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	bIsPerformingStealthKill = false; // Ora si può eseguire un'altra kill

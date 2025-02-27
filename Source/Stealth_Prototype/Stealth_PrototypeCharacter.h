@@ -120,6 +120,8 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stealth", meta = (AllowPrivateAccess = "true"))
 	class AEnemy* TargetEnemy;
 
+	bool IsBehindEnemy(AEnemy* targetEnemy);
+
 	UPROPERTY(EditDefaultsOnly, Category = "Stealth")
 	class UAnimMontage* StealthKillMontage;
 
