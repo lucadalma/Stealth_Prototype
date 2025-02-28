@@ -320,3 +320,9 @@ void AStealth_PrototypeCharacter::FinishStealthKill()
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
 	bIsPerformingStealthKill = false; // Ora si può eseguire un'altra kill
 }
+
+void AStealth_PrototypeCharacter::EnableRagdoll()
+{
+	GetMesh()->SetSimulatePhysics(true);
+	GetMesh()->SetCollisionEnabled(ECollisionEnabled::PhysicsOnly);
+}

@@ -18,7 +18,6 @@ public:
 public:
 	void PawnKilled(APawn* PawnKilled);
 
-private:
 	void EndGame(bool bIsPlayerWinner);
 };
 

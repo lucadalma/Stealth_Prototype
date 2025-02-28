@@ -106,6 +106,10 @@ public:
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 
 	class UFootstep_Component* GetFootstepComponent() const;
+	UPROPERTY(EditAnywhere, Category = "Animation")
+	UAnimMontage* DeathMontage;
+
+	void EnableRagdoll();
 
 	float GetHealth() const;
 	float GetMaxHealth() const;
@@ -124,6 +128,7 @@ private:
 
 	UPROPERTY(EditDefaultsOnly, Category = "Stealth")
 	class UAnimMontage* StealthKillMontage;
+
 
 	void FindStealthKillTarget();
 	void PerformStealthKill();

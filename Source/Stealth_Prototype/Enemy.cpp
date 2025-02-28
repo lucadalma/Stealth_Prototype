@@ -5,6 +5,7 @@
 #include "Components/BoxComponent.h"
 #include "Stealth_PrototypeCharacter.h"
 #include "Components/CapsuleComponent.h"
+#include "Stealth_PrototypeGameMode.h"
 
 // Sets default values
 AEnemy::AEnemy()
@@ -102,6 +103,28 @@ void AEnemy::OnAttackOverlapBegin(UPrimitiveComponent* const OverlappedComponent
 	{
 		auto const NewHealth = Player->GetHealth() - 5;
 		Player->SetHealth(NewHealth);
+		if (Player->IsDead())
+		{
+			AStealth_PrototypeGameMode* GameMode = GetWorld()->GetAuthGameMode<AStealth_PrototypeGameMode>();
+
+			if (GameMode != nullptr)
+			{
+				GameMode->PawnKilled(Player);
+				if (Player->DeathMontage)
+				{
+					UAnimInstance* AnimInstance = Player->GetMesh()->GetAnimInstance();
+					if (AnimInstance)
+					{
+						AnimInstance->Montage_Play(Player->DeathMontage);
+					}
+				}
+				Player->EnableRagdoll();
+				GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+				DetachFromControllerPendingDestroy();
+
+			}
+
+		}
 	}
 }
 

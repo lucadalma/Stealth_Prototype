@@ -18,7 +18,8 @@ public class Stealth_Prototype : ModuleRules
 			"EnhancedInput", 
 			"NavigationSystem", 
 			"GameplayTasks",
-			"AIModule"
+			"AIModule", 
+			"UMG"
 		});
 	}
 }
