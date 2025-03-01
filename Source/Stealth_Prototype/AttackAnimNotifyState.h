@@ -12,7 +12,9 @@ private:
 	GENERATED_BODY()
 
 public:
+	//NotifyBegin
 	virtual void NotifyBegin(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation, float TotalDuration) override;
+	//NotifyEnd
 	virtual void NotifyEnd(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
 
 };

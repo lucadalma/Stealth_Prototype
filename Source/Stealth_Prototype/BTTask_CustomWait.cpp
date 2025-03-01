@@ -5,11 +5,14 @@
 #include "AIController.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
+//Custom Wait per l'investigazione dell' AI
 EBTNodeResult::Type UBTTask_CustomWait::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+    //Ottengo il UBlackboardComponent dell' AI
     UBlackboardComponent* BlackboardComp = OwnerComp.GetBlackboardComponent();
     if (BlackboardComp)
     {
+        //Timer per settare la variabile IsInvestigating a false
         FTimerHandle TimerHandle;
         OwnerComp.GetWorld()->GetTimerManager().SetTimer(TimerHandle, [&]()
             {

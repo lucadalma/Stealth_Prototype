@@ -6,7 +6,7 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "Blueprint/AIBlueprintHelperLibrary.h"
 
-
+//Costruttore
 UMyBTTask_ChasePlayer::UMyBTTask_ChasePlayer(FObjectInitializer const& ObjectInitializer) :
 	UBTTask_BlackboardBase{ ObjectInitializer }
 {
@@ -15,14 +15,16 @@ UMyBTTask_ChasePlayer::UMyBTTask_ChasePlayer(FObjectInitializer const& ObjectIni
 
 EBTNodeResult::Type UMyBTTask_ChasePlayer::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	if (auto* const cont = Cast<AStealthAIController>(OwnerComp.GetAIOwner()))
+	//Ottengo AI Controller
+	if (auto* const AI = Cast<AStealthAIController>(OwnerComp.GetAIOwner()))
 	{
-
+		//Posizione player
 		auto const PlayerLocation = OwnerComp.GetBlackboardComponent()->GetValueAsVector(GetSelectedBlackboardKey());
 
-		UAIBlueprintHelperLibrary::SimpleMoveToLocation(cont, PlayerLocation);
+		//Muovoi l'Ai alla posizione
+		UAIBlueprintHelperLibrary::SimpleMoveToLocation(AI, PlayerLocation);
 
-		// finish with success
+		//Ritorno successo
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		return EBTNodeResult::Succeeded;
 	}

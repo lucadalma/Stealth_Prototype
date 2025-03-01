@@ -15,6 +15,8 @@ class STEALTH_PROTOTYPE_API UMyBTTask_ChasePlayer : public UBTTask_BlackboardBas
 	GENERATED_BODY()
 	
 public:
+	//Costuttore
 	explicit UMyBTTask_ChasePlayer(FObjectInitializer const& ObjectInitializer);
+	//ExecuteTask
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 };

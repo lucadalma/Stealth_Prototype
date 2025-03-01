@@ -16,15 +16,17 @@ class STEALTH_PROTOTYPE_API UAnimNotify_Step : public UAnimNotify
 	GENERATED_BODY()
 	
 public:
-
+	//Intensità suono del passo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 	float Loudness = 1.0f;
 
+	//Range del passo
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI")
 	float MaxRange = 1000.0f;
-
+	//Funzione Notify
 	virtual void Notify(USkeletalMeshComponent* MeshComp, UAnimSequenceBase* Animation) override;
 
+	//Enum per piede sinisto o destro
 	UPROPERTY(EditAnywhere)
 	EFoot Foot;
 };

@@ -20,8 +20,8 @@ class STEALTH_PROTOTYPE_API ICombatInterface
 {
 	GENERATED_BODY()
 
-	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
+	//Interfaccia per l'Enemy, che gli fa aggiungere il MeleeAttack
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Combat")
 	int MeleeAttack();
 };

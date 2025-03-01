@@ -21,14 +21,16 @@ protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	//Socket piede Sinistro
 	UPROPERTY(EditDefaultsOnly)
 	FName LeftFootSocket = TEXT("foot_l");
 
+	//Socket piede destro
 	UPROPERTY(EditDefaultsOnly)
 	FName RightFootSocket = TEXT("foot_rwd");
 
 public:	
-
+	//Gestisco il passo
 	void HandleFootstep(EFoot Foot, float Loudness, float MaxRange);
 
 		

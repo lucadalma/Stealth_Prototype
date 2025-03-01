@@ -29,31 +29,38 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+	//Ottengo il behavior tree
 	UBehaviorTree* GetBehaviorTree() const;
-
+	//Ottengo il percorso del partol
 	APatrolPath* GetPatrolPath() const;
-
+	//AnimMontage
 	UAnimMontage* GetMontage() const;
-	
+	//Inizio Attacco
 	void AttackStart();
+	//Fine Attacco
 	void AttackEnd();
+	//Animazione morte
+	void PlayDeathAnimation();
+	//Ragdoll
+	void EnableRagdoll();
 
 
 	int MeleeAttack_Implementation() override;
 private:
+	//BehaviorTree
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	UBehaviorTree* Tree; 
-
-
+	//PatrolPath
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
 	APatrolPath* PatrolPath;
-
+	//AnimMontage
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Animation", meta = (AllowPrivateAccess = "true"))
 	UAnimMontage* Montage;
-
+	//BoxComponent
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Collision", meta = (AllowPrivateAccess = "true"))
 	class UBoxComponent* PunchCollisionBox;
 
+	//OnAttackOverlapBegin
 	UFUNCTION()
 	void OnAttackOverlapBegin(
 		UPrimitiveComponent* const OverlappedComponent,
@@ -63,6 +70,7 @@ private:
 		bool const FromSweep,
 		FHitResult const& SweepResult);
 
+	//OnAttackOverlapEnd
 	UFUNCTION()
 	void OnAttackOverlapEnd(
 		UPrimitiveComponent* const OverlappedComponent,
@@ -71,12 +79,10 @@ private:
 		int const OtherBodyIndex);
 
 private:
+	//UAnimMontage
 	UPROPERTY(EditDefaultsOnly, Category = "Animation")
 	UAnimMontage* DeathMontage;
 
-public:
-	void PlayDeathAnimation();
-	void EnableRagdoll();
 
 
 };

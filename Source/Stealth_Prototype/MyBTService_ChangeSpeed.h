@@ -16,10 +16,13 @@ class STEALTH_PROTOTYPE_API UMyBTService_ChangeSpeed : public UBTService_Blackbo
 	
 
 public:
+	//Costruttore
 	UMyBTService_ChangeSpeed();
+	//Funzione Service
 	virtual void OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 private:
+	//Varibile speed (AllowPrivateAccess = "yes"):Permette l'accesso alla variabile anche se è dichiarata come private nella classe
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "yes"))
 	float Speed = 600.f;
 

@@ -15,6 +15,7 @@ class STEALTH_PROTOTYPE_API UBTTask_CustomWait : public UBTTaskNode
 	GENERATED_BODY()
 	
 protected:
+	//ExecuteTask
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 

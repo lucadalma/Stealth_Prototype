@@ -15,10 +15,13 @@ class STEALTH_PROTOTYPE_API UMyBTTask_FindPathPoint : public UBTTask_BlackboardB
 	GENERATED_BODY()
 
 public:
+	//Costruttore
 	explicit UMyBTTask_FindPathPoint(FObjectInitializer const& ObjectInitializer);
+	//ExecuteTask
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	
 private:
+	//Variabile PatrolPathVectorKey
 	UPROPERTY(EditAnywhere, Category = "Blackboard", meta = (AllowPrivateAccess = "true"))
 	FBlackboardKeySelector PatrolPathVectorKey;
 };

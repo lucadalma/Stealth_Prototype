@@ -20,10 +20,8 @@ EBTNodeResult::Type UMyBTTask_FindRandomLocation::ExecuteTask(UBehaviorTreeCompo
 
 		if (auto* const npc = cont->GetPawn())
 		{
-			// obtain npc location to use as an origin
 			auto const Origin = npc->GetActorLocation();
 
-			// get the navigatoin system and generate a random location
 			if (auto* const NavSys = UNavigationSystemV1::GetCurrent(GetWorld()))
 			{
 				FNavLocation Loc;
@@ -31,7 +29,7 @@ EBTNodeResult::Type UMyBTTask_FindRandomLocation::ExecuteTask(UBehaviorTreeCompo
 				{
 					OwnerComp.GetBlackboardComponent()->SetValueAsVector(GetSelectedBlackboardKey(), Loc.Location);
 				}
-				// finish with success
+
 				FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 				return EBTNodeResult::Succeeded;
 			}

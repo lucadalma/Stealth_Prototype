@@ -7,25 +7,31 @@
 #include "Components/CapsuleComponent.h"
 #include "Stealth_PrototypeGameMode.h"
 
-// Sets default values
+//Costruttore
 AEnemy::AEnemy()
 {
-	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	//Creo un BoxComponent per il pugno dell'Enemy
 	PunchCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("PunchCollisionBox"));
 
+	//Setto i valori di default
 	if (PunchCollisionBox)
 	{
+		//Scala
 		PunchCollisionBox->SetBoxExtent({ 5.f,5.f,5.f }, false);
 		FAttachmentTransformRules const Rules{
+			//Componente viene spostato alla posizione dell'oggetto a cui è attaccato
 			EAttachmentRule::SnapToTarget,
+			//Componente eredita immediatamente la rotazione dell'oggetto target
 			EAttachmentRule::SnapToTarget,
+			//Componente mantiene la sua scala globale invece di adattarsi a quella del target
 			EAttachmentRule::KeepWorld,
 			false };
 
+		//Attacca il component alla mano
 		PunchCollisionBox->AttachToComponent(GetMesh(), Rules, "hand_r_socket");
-		PunchCollisionBox->SetRelativeLocation({ -7.f, 0.f, 0.f });
+		//PunchCollisionBox->SetRelativeLocation({ -7.f, 0.f, 0.f });
 
 	}
 
@@ -35,6 +41,7 @@ AEnemy::AEnemy()
 void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
+	//Collision boc del pugno aggiuno Begin Overlap e End Overlap
 	PunchCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnAttackOverlapBegin);
 	PunchCollisionBox->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnAttackOverlapEnd);
 
@@ -55,33 +62,40 @@ void AEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 
 }
 
+//Funzione per ottenere il BehaviorTree
 UBehaviorTree* AEnemy::GetBehaviorTree() const
 {
 	return Tree;
 }
 
+//Funzione per ottenere il Patrol Path
 APatrolPath* AEnemy::GetPatrolPath() const
 {
 	return PatrolPath;
 }
 
+//Finzione per ottenere l'animazione
 UAnimMontage* AEnemy::GetMontage() const
 {
 	return Montage;
 }
 
+//Inizio Attacco
 void AEnemy::AttackStart()
 {
+	//First è il profilo di collisione 
 	PunchCollisionBox->SetCollisionProfileName("Fist");
+	//Il pugno può colpire
 	PunchCollisionBox->SetNotifyRigidBodyCollision(true);
 }
-
+//Fine Attacco
 void AEnemy::AttackEnd()
 {
 	PunchCollisionBox->SetCollisionProfileName("Fist");
+	//Il pugno non può colpire
 	PunchCollisionBox->SetNotifyRigidBodyCollision(false);
 }
-
+//Funzione per l'animazione di attacco
 int AEnemy::MeleeAttack_Implementation()
 {
 	if (Montage)
@@ -91,25 +105,32 @@ int AEnemy::MeleeAttack_Implementation()
 
 	return 0;
 }
-
+//Overlap Begin del pugno con il plauyer
 void AEnemy::OnAttackOverlapBegin(UPrimitiveComponent* const OverlappedComponent, AActor* const OtherActor, UPrimitiveComponent* const OtherComponent, int const OtherBodyIndex, bool const FromSweep, FHitResult const& SweepResult)
 {
+	//Chech per non colpirsi da solo
 	if (OtherActor == this)
 	{
 		return;
 	}
-
+	//Ottengo il player
 	if (auto const Player = Cast<AStealth_PrototypeCharacter>(OtherActor))
 	{
-		auto const NewHealth = Player->GetHealth() - 5;
+		//Health del player dopo essere colpito
+		int const NewHealth = Player->GetHealth() - 5;
+		//Setto la vita del player
 		Player->SetHealth(NewHealth);
+		//Controllo se il player è morto
 		if (Player->IsDead())
 		{
+			//Ottengo la GameMode
 			AStealth_PrototypeGameMode* GameMode = GetWorld()->GetAuthGameMode<AStealth_PrototypeGameMode>();
 
 			if (GameMode != nullptr)
 			{
+				//Chiamo la funzione PawnKilled passandogli il player
 				GameMode->PawnKilled(Player);
+				//Animazione di morte del player
 				if (Player->DeathMontage)
 				{
 					UAnimInstance* AnimInstance = Player->GetMesh()->GetAnimInstance();
@@ -118,6 +139,7 @@ void AEnemy::OnAttackOverlapBegin(UPrimitiveComponent* const OverlappedComponent
 						AnimInstance->Montage_Play(Player->DeathMontage);
 					}
 				}
+				//Disabilito le collisioni e attivo il ragdoll
 				Player->EnableRagdoll();
 				GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 				DetachFromControllerPendingDestroy();
@@ -128,16 +150,19 @@ void AEnemy::OnAttackOverlapBegin(UPrimitiveComponent* const OverlappedComponent
 	}
 }
 
+//Overlap End
 void AEnemy::OnAttackOverlapEnd(UPrimitiveComponent* const OverlappedComponent, AActor* const OtherActor, UPrimitiveComponent* OtherComponent, int const OtherBodyIndex)
 {
-
+	
 }
 
+//Funzione per l'animazione di morte del player
 void AEnemy::PlayDeathAnimation()
 {
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && DeathMontage)
 	{
+		//Esegui animazione
 		AnimInstance->Montage_Play(DeathMontage);
 
 		// Timer per attivare il ragdoll dopo l'animazione
@@ -148,11 +173,13 @@ void AEnemy::PlayDeathAnimation()
 	}
 	else
 	{
-		EnableRagdoll(); // Se non c'è animazione, attiva subito il ragdoll
+		//Se non c'è animazione, attiva subito il ragdoll
+		EnableRagdoll();
 		GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	}
 }
 
+//Attiva il Ragdoll del nemico
 void AEnemy::EnableRagdoll()
 {
 	GetMesh()->SetSimulatePhysics(true);

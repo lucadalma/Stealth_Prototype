@@ -16,13 +16,17 @@ class STEALTH_PROTOTYPE_API UMyBTTask_FindPlayerLocation : public UBTTask_Blackb
 
 
 public:
+	//Costruttore
 	explicit UMyBTTask_FindPlayerLocation(FObjectInitializer const& ObjectInitializer);
+	//ExecuteTask
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 private:
+	//SearchRandom
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Search", meta = (AllowPrivateAccess = "true"))
 	bool SearchRandom = false;
 
+	//Raggio di ricerca
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Search", meta = (AllowPrivateAccess = "true"))
 	float SearchRadius = 150.f;
 };

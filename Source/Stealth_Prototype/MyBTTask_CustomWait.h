@@ -16,8 +16,10 @@ class STEALTH_PROTOTYPE_API UMyBTTask_CustomWait : public UBTTask_BlackboardBase
 
 
 public:
+	//Costruttore
 	UMyBTTask_CustomWait();
 
 protected:
+	//ExecuteTask
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 };

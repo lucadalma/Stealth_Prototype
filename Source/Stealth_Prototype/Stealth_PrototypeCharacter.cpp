@@ -62,6 +62,7 @@ AStealth_PrototypeCharacter::AStealth_PrototypeCharacter()
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
+	//Chiamo la funzione per aggiungere il player come stimolo visivo
 	SetupStimulusSource();
 }
 
@@ -104,6 +105,7 @@ void AStealth_PrototypeCharacter::SetupPlayerInputComponent(UInputComponent* Pla
 		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Started, this, &AStealth_PrototypeCharacter::OnCrouchActionStarted);
 		EnhancedInputComponent->BindAction(CrouchAction, ETriggerEvent::Completed, this, &AStealth_PrototypeCharacter::OnCrouchActionEnded);
 	
+		//Stealth kill
 		EnhancedInputComponent->BindAction(StealthKillAction, ETriggerEvent::Started, this, &AStealth_PrototypeCharacter::PerformStealthKill);
 	}
 	else
@@ -148,30 +150,36 @@ void AStealth_PrototypeCharacter::Look(const FInputActionValue& Value)
 	}
 }
 
+//Funzione per ottenere il FootstepsComponent
 UFootstep_Component* AStealth_PrototypeCharacter::GetFootstepComponent() const
 {
 	return FootstepsComponent;
 }
 
+//ritoro la variabile Health
 float AStealth_PrototypeCharacter::GetHealth() const
 {
 	return Health;
 }
 
+//ritorno la variabile MaxHealth
 float AStealth_PrototypeCharacter::GetMaxHealth() const
 {
 	return MaxHealth;
 }
 
+//funziome per settare la nuova health al player
 void AStealth_PrototypeCharacter::SetHealth(float const NewHealth)
 {
 	Health = NewHealth;
 	
 }
 
+//Funzione per registrare il personaggio come stimolo visivo per l'AI
 void AStealth_PrototypeCharacter::SetupStimulusSource()
 {
 	StimulusSource = CreateDefaultSubobject<UAIPerceptionStimuliSourceComponent>(TEXT("Stimulus"));
+
 	if (StimulusSource) 
 	{
 		StimulusSource->RegisterForSense(TSubclassOf<UAISense_Sight>());
@@ -179,50 +187,61 @@ void AStealth_PrototypeCharacter::SetupStimulusSource()
 	}
 }
 
+//Funzione per far abbassare il player
 void AStealth_PrototypeCharacter::OnCrouchActionStarted(const FInputActionValue& Value)
 {
 	ACharacter* Character = this;
 	Character->Crouch();
 
 }
-
+//Funzione per far alzare il player
 void AStealth_PrototypeCharacter::OnCrouchActionEnded(const FInputActionValue& Value)
 {
 	ACharacter* Character = this;
 	Character->UnCrouch();
 }
 
+//funzione per controllare se il player è morto
 bool AStealth_PrototypeCharacter::IsDead() const
 {
 	return Health <= 0;
 }
 
 
+//funzione per trovare un nemico da uccide all'interno di un certo raggio
 void AStealth_PrototypeCharacter::FindStealthKillTarget()
 {
 	FVector PlayerLocation = GetActorLocation();
 	float SearchRadius = 200.f;
 
-	// Definisce i parametri per il Trace
+	//Definisce i parametri per il Trace
 	FCollisionQueryParams QueryParams;
 	QueryParams.AddIgnoredActor(this);
 
-	// Lista di attori colpiti
+	//Lista di attori colpiti
 	TArray<FOverlapResult> Overlaps;
 	GetWorld()->OverlapMultiByChannel(Overlaps, PlayerLocation, FQuat::Identity,
 		ECC_Pawn, FCollisionShape::MakeSphere(SearchRadius), QueryParams);
 
+	//setto TargetEnemy a null
 	TargetEnemy = nullptr;
+	//FLT_MAX è una costante definita che rappresenta il valore massimo che un float può avere
 	float ClosestDistance = FLT_MAX;
 
+	//for per controllare i risultati colpiti dall'overlap
 	for (const FOverlapResult& Result : Overlaps)
 	{
+		//provo a castare il risultato alla classe AEnemy
 		AEnemy* Enemy = Cast<AEnemy>(Result.GetActor());
+		//faccio il check
 		if (Enemy)
-		{
+		{	
+			//Ottengo la distanza tra il player e l'enemy
 			float Distance = FVector::Dist(PlayerLocation, Enemy->GetActorLocation());
+			//controllo se la distanza è minore di ClosestDistance
 			if (Distance < ClosestDistance)
 			{
+				//TargetEnemy diventa Enemy
 				TargetEnemy = Enemy;
 				ClosestDistance = Distance;
 			}
@@ -230,30 +249,37 @@ void AStealth_PrototypeCharacter::FindStealthKillTarget()
 	}
 }
 
+//Funzione per capire se il player è dietro al nemico
 bool AStealth_PrototypeCharacter::IsBehindEnemy(AEnemy* targetEnemy)
 {
+	//Check
 	if (!targetEnemy) return false;
 
-	// Direzione in cui il nemico sta guardando (normalizzata)
+	//Direzione in cui il nemico sta guardando (normalizzata)
 	FVector EnemyForward = targetEnemy->GetActorForwardVector().GetSafeNormal();
 
-	// Direzione dal nemico verso il giocatore (normalizzata)
+	//Direzione dal nemico verso il giocatore (normalizzata)
 	FVector ToPlayer = (GetActorLocation() - targetEnemy->GetActorLocation()).GetSafeNormal();
 
-	// Calcola il prodotto scalare tra i due vettori
+	//Calcola il prodotto scalare tra i due vettori, se il valore è 1 i due vettori sono paralleli , 0 perpendicolari , -1 opposti
 	float DotProduct = FVector::DotProduct(EnemyForward, ToPlayer);
 
-	// Se il DotProduct è minore di -0.7, il player è dietro (180° = -1, 90° = 0)
+	//Se il DotProduct è minore di -0.7, il player è dietro (180° = -1, 90° = 0)
 	return DotProduct < -0.7f;
 }
 
+//Funzione che esegue la StealthKill
 void AStealth_PrototypeCharacter::PerformStealthKill()
 {
+	//controllo se sta già eseguendo una stealth kill
 	if (bIsPerformingStealthKill) return;
+	//senno setto a true
 	bIsPerformingStealthKill = true;
 
+	//chiamo la funzione per trovare il nemico più vicino
 	FindStealthKillTarget();
 
+	//Controllo se effettivamente ha trovato qualcosa
 	if (!TargetEnemy)
 	{
 		bIsPerformingStealthKill = false;
@@ -263,21 +289,20 @@ void AStealth_PrototypeCharacter::PerformStealthKill()
 	// Controllo se il player è dietro al nemico
 	if (!IsBehindEnemy(TargetEnemy))
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Devi essere dietro al nemico per eseguire la stealth kill!"));
 		bIsPerformingStealthKill = false;
 		return;
 	}
 
+	//Controllo sempre se è un nemico
 	AStealthAIController* AIController = Cast<AStealthAIController>(TargetEnemy->GetController());
 	if (!AIController) return;
-
 	UBlackboardComponent* BlackboardComp = AIController->GetBlackboardComponent();
 	if (!BlackboardComp) return;
 
+	//Controllo se il nemico sta vedendo il player in questo momento
 	bool bCanSeePlayer = BlackboardComp->GetValueAsBool("CanSeePlayer");
 	if (bCanSeePlayer)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("L'IA ti sta vedendo! Stealth Kill non eseguita."));
 		bIsPerformingStealthKill = false;
 		return;
 	}
@@ -286,10 +311,11 @@ void AStealth_PrototypeCharacter::PerformStealthKill()
 	TargetEnemy->GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->DisableMovement();
 
+	//Ruoto il player verso il nemico
 	FRotator LookAtRotation = (TargetEnemy->GetActorLocation() - GetActorLocation()).Rotation();
 	SetActorRotation(FRotator(0.f, LookAtRotation.Yaw, 0.f)); // Mantieni solo la rotazione Yaw
 
-	// Riproduce animazione di Stealth Kill per il giocatore
+	//Riproduce animazione di Stealth Kill per il giocatore
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && StealthKillMontage)
 	{
@@ -305,22 +331,26 @@ void AStealth_PrototypeCharacter::PerformStealthKill()
 }
 
 
-
+//Funzione di fine stealth kill
 void AStealth_PrototypeCharacter::FinishStealthKill()
 {
+	//Attivo il Ragdoll del nemico
 	if (TargetEnemy)
 	{
 		TargetEnemy->EnableRagdoll();
 		TargetEnemy = nullptr;
 	}
 
-	FVector FinalPosition = GetMesh()->GetComponentLocation();
-	SetActorLocation(FinalPosition, true); // Il secondo parametro evita collisioni indesiderate
 
+	/*FVector FinalPosition = GetMesh()->GetComponentLocation();
+	SetActorLocation(FinalPosition, true);*/
+
+	//Rimetto la possibilità di killare a true
 	GetCharacterMovement()->SetMovementMode(MOVE_Walking);
-	bIsPerformingStealthKill = false; // Ora si può eseguire un'altra kill
+	bIsPerformingStealthKill = false;
 }
 
+//Funzione per attivare il Ragdoll
 void AStealth_PrototypeCharacter::EnableRagdoll()
 {
 	GetMesh()->SetSimulatePhysics(true);

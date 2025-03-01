@@ -15,10 +15,11 @@ class STEALTH_PROTOTYPE_API UMyBTTask_Attack : public UBTTaskNode
 	GENERATED_BODY()
 
 public:
+	//Costruttore
 	UMyBTTask_Attack();
 
 protected:
-
+	//Eseguisci Task
 	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 	
 };

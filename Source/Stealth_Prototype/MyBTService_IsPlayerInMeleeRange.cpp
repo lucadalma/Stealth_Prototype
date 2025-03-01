@@ -9,7 +9,7 @@
 #include "Runtime/Engine/Classes/Engine/World.h"
 #include "BehaviorTree/BlackboardComponent.h"
 
-
+//Costruttore
 UMyBTService_IsPlayerInMeleeRange::UMyBTService_IsPlayerInMeleeRange()
 {
 	bNotifyBecomeRelevant = true;
@@ -18,12 +18,14 @@ UMyBTService_IsPlayerInMeleeRange::UMyBTService_IsPlayerInMeleeRange()
 
 void UMyBTService_IsPlayerInMeleeRange::OnBecomeRelevant(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	auto const * const cont = Cast<AStealthAIController>(OwnerComp.GetAIOwner());
-	auto const * const enemy = Cast<AEnemy>(cont->GetPawn());
-
-	auto const * const player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
-
-	OwnerComp.GetBlackboardComponent()->SetValueAsBool(GetSelectedBlackboardKey(), enemy->GetDistanceTo(player) <= MeleeRange);
+	//Ottendo Controller AI
+	auto const * const AI = Cast<AStealthAIController>(OwnerComp.GetAIOwner());
+	//Ottengo dal controller l'enemy
+	auto const * const Enemy = Cast<AEnemy>(AI->GetPawn());
+	//Ottengo il player
+	auto const * const Player = UGameplayStatics::GetPlayerCharacter(GetWorld(), 0);
+	//Ritorno un bool se in range alla variabile GetSelectedBlackboardKey()
+	OwnerComp.GetBlackboardComponent()->SetValueAsBool(GetSelectedBlackboardKey(), Enemy->GetDistanceTo(Player) <= MeleeRange);
 
 
 }

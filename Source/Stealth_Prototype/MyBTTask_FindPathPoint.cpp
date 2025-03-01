@@ -14,25 +14,26 @@ UMyBTTask_FindPathPoint::UMyBTTask_FindPathPoint(FObjectInitializer const& Objec
 
 EBTNodeResult::Type UMyBTTask_FindPathPoint::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
-	// attempt to get the NPC's controller
-	if (auto* const cont = Cast<AStealthAIController>(OwnerComp.GetAIOwner()))
+	//Ottengo Ai Controller
+	if (auto* const AI = Cast<AStealthAIController>(OwnerComp.GetAIOwner()))
 	{
-		// attempt to get the blackboard component from the behaviour tree
-		if (auto* const bc = OwnerComp.GetBlackboardComponent())
+		//Ottengo il BlackBoard
+		if (auto* const BC = OwnerComp.GetBlackboardComponent())
 		{
-			// get the current patrol path index from the blackboard
-			auto const index = bc->GetValueAsInt((GetSelectedBlackboardKey()));
+			//Ottengo l'attuale index del patrol point
+			auto const index = BC->GetValueAsInt((GetSelectedBlackboardKey()));
 
-			// get the NPC
-			if (auto* npc = Cast<AEnemy>(cont->GetPawn()))
+			//Ottengo l'Enemy
+			if (auto* Enemy = Cast<AEnemy>(AI->GetPawn()))
 			{
-				// get the current patrol path vector from the NPC - this is local to the patrol path actor
-				auto const Point = npc->GetPatrolPath()->GetPatrolPoint(index);
+				//Ottieni il vettore attuale del percorso di pattuglia dall' Enemy
+				auto const Point = Enemy->GetPatrolPath()->GetPatrolPoint(index);
 
-				auto const GlobalPoint = npc->GetPatrolPath()->GetActorTransform().TransformPosition(Point);
-				bc->SetValueAsVector(PatrolPathVectorKey.SelectedKeyName, GlobalPoint);
+				auto const GlobalPoint = Enemy->GetPatrolPath()->GetActorTransform().TransformPosition(Point);
+				//Setto il path point
+				BC->SetValueAsVector(PatrolPathVectorKey.SelectedKeyName, GlobalPoint);
 
-				// finish with success
+				//Finisco con un successo
 				FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 				return EBTNodeResult::Succeeded;
 			}
