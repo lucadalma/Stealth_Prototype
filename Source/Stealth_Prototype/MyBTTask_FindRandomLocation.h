@@ -13,10 +13,10 @@ UCLASS()
 class STEALTH_PROTOTYPE_API UMyBTTask_FindRandomLocation : public UBTTask_BlackboardBase
 {
 	GENERATED_BODY()
-public:
-	explicit UMyBTTask_FindRandomLocation(FObjectInitializer const& ObjectInitializer);
-	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-private:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
-	float SearchRadius = 1500.f;
+//public:
+//	explicit UMyBTTask_FindRandomLocation(FObjectInitializer const& ObjectInitializer);
+//	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
+//private:
+//	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "AI", meta = (AllowPrivateAccess = "true"))
+//	float SearchRadius = 1500.f;
 };

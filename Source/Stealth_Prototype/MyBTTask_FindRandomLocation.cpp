@@ -7,33 +7,33 @@
 #include "BehaviorTree/BlackboardComponent.h"
 
 
-UMyBTTask_FindRandomLocation::UMyBTTask_FindRandomLocation(FObjectInitializer const& ObjectInitializer) :
-	UBTTask_BlackboardBase{ ObjectInitializer }
-{
-	NodeName = "Find Random Location In NavMesh";
-}
-
-EBTNodeResult::Type UMyBTTask_FindRandomLocation::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
-{
-	if (auto* const cont = Cast<AStealthAIController>(OwnerComp.GetAIOwner()))
-	{
-
-		if (auto* const npc = cont->GetPawn())
-		{
-			auto const Origin = npc->GetActorLocation();
-
-			if (auto* const NavSys = UNavigationSystemV1::GetCurrent(GetWorld()))
-			{
-				FNavLocation Loc;
-				if (NavSys->GetRandomPointInNavigableRadius(Origin, SearchRadius, Loc))
-				{
-					OwnerComp.GetBlackboardComponent()->SetValueAsVector(GetSelectedBlackboardKey(), Loc.Location);
-				}
-
-				FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
-				return EBTNodeResult::Succeeded;
-			}
-		}
-	}
-	return EBTNodeResult::Failed;
-}
+//UMyBTTask_FindRandomLocation::UMyBTTask_FindRandomLocation(FObjectInitializer const& ObjectInitializer) :
+//	UBTTask_BlackboardBase{ ObjectInitializer }
+//{
+//	NodeName = "Find Random Location In NavMesh";
+//}
+//
+//EBTNodeResult::Type UMyBTTask_FindRandomLocation::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
+//{
+//	if (auto* const cont = Cast<AStealthAIController>(OwnerComp.GetAIOwner()))
+//	{
+//
+//		if (auto* const npc = cont->GetPawn())
+//		{
+//			auto const Origin = npc->GetActorLocation();
+//
+//			if (auto* const NavSys = UNavigationSystemV1::GetCurrent(GetWorld()))
+//			{
+//				FNavLocation Loc;
+//				if (NavSys->GetRandomPointInNavigableRadius(Origin, SearchRadius, Loc))
+//				{
+//					OwnerComp.GetBlackboardComponent()->SetValueAsVector(GetSelectedBlackboardKey(), Loc.Location);
+//				}
+//
+//				FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
+//				return EBTNodeResult::Succeeded;
+//			}
+//		}
+//	}
+//	return EBTNodeResult::Failed;
+//}

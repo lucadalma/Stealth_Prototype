@@ -12,10 +12,12 @@
 #include "BehaviorTree/BlackboardComponent.h"
 #include "InputActionValue.h"
 #include "Enemy.h"
+#include "Components/WidgetComponent.h"
 #include "Footstep_Component.h"
 #include "Perception/AIPerceptionStimuliSourceComponent.h"
 #include "Perception/AISense_Sight.h"
 #include "StealthAIController.h"
+#include "HealthBarWidget.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
 
@@ -64,6 +66,20 @@ AStealth_PrototypeCharacter::AStealth_PrototypeCharacter()
 
 	//Chiamo la funzione per aggiungere il player come stimolo visivo
 	SetupStimulusSource();
+
+	//Widget healthbar
+	WidgetComponent = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthValue"));
+	if (WidgetComponent) 
+	{
+		WidgetComponent->SetupAttachment(RootComponent);
+		WidgetComponent->SetWidgetSpace(EWidgetSpace::Screen);
+		WidgetComponent->SetRelativeLocation({0.f, 0.f, 95.f});
+		static ConstructorHelpers::FClassFinder<UUserWidget> WidgetClass{ TEXT("/Game/UI/WBP_HealthBar") };
+		if (WidgetClass.Succeeded())
+		{
+			WidgetComponent->SetWidgetClass((WidgetClass.Class));
+		}
+	}
 }
 
 void AStealth_PrototypeCharacter::BeginPlay()
@@ -81,6 +97,15 @@ void AStealth_PrototypeCharacter::BeginPlay()
 	}
 
 	SetHealth(MaxHealth);
+}
+
+void AStealth_PrototypeCharacter::Tick(float DeltaTime)
+{
+	Super::Tick(DeltaTime);
+	if (auto const Widget = Cast<UHealthBarWidget>(WidgetComponent->GetUserWidgetObject())) 
+	{
+		Widget->SetBarValuePercent(Health / MaxHealth);
+	}
 }
 
 //////////////////////////////////////////////////////////////////////////

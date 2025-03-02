@@ -6,17 +6,10 @@
 #include "BehaviorTree/BTTaskNode.h"
 #include "BTTask_CustomWait.generated.h"
 
-/**
- * 
- */
+//CLASSE NON USATA
 UCLASS()
 class STEALTH_PROTOTYPE_API UBTTask_CustomWait : public UBTTaskNode
 {
 	GENERATED_BODY()
-	
-protected:
-	//ExecuteTask
-	virtual EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
-
 
 };

@@ -5,10 +5,10 @@
 #include "MyPlayerController.h"
 #include "UObject/ConstructorHelpers.h"
 #include "EngineUtils.h"
-
+//Costruttore
 AStealth_PrototypeGameMode::AStealth_PrototypeGameMode()
 {
-	// set default pawn class to our Blueprinted character
+	//Imposta il Pawn predefinito
 	static ConstructorHelpers::FClassFinder<APawn> PlayerPawnBPClass(TEXT("/Game/ThirdPerson/Blueprints/BP_ThirdPersonCharacter"));
 	if (PlayerPawnBPClass.Class != NULL)
 	{
@@ -16,12 +16,13 @@ AStealth_PrototypeGameMode::AStealth_PrototypeGameMode()
 	}
 }
 
-
+//Funzione che mi ritorna false se il player ha perso
 void AStealth_PrototypeGameMode::PawnKilled(APawn* PawnKilled)
 {
 	EndGame(false);
 }
 
+//Funzione di fine partita
 void AStealth_PrototypeGameMode::EndGame(bool bIsPlayerWinner)
 {
 	for (AController* Controller : TActorRange<AController>(GetWorld()))

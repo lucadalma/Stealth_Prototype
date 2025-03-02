@@ -3,19 +3,18 @@
 
 #include "PatrolPath.h"
 
-// Sets default values
+//Costruttore
 APatrolPath::APatrolPath()
 {
- 	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = false;
-
 }
 
+//Ritorno un preciso patrol point
 FVector APatrolPath::GetPatrolPoint(int const index) const
 {
 	return PatrolPoints[index];
 }
-
+//Ritorno il numero di patrol point
 int APatrolPath::Num() const
 {
 	return PatrolPoints.Num();

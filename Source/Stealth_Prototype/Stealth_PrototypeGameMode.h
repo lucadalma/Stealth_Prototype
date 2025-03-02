@@ -12,12 +12,14 @@ class AStealth_PrototypeGameMode : public AGameModeBase
 	GENERATED_BODY()
 
 public:
+	//Costruttore
 	AStealth_PrototypeGameMode();
 
 
 public:
+	//Funzione PawnKilled
 	void PawnKilled(APawn* PawnKilled);
-
+	//Funzione Fine Partita
 	void EndGame(bool bIsPlayerWinner);
 };
 

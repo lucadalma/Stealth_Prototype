@@ -6,15 +6,18 @@
 #include "TimerManager.h"
 #include "Blueprint/UserWidget.h"
 
+//Funzione per Restartare la partita
 void AMyPlayerController::RestartGame()
 {
 	UGameplayStatics::OpenLevel(this, FName(*GetWorld()->GetName()), false);
 }
 
+//Funzione per capire quale Widget mostrare a fine partita
 void AMyPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
 {
 	Super::GameHasEnded(EndGameFocus, bIsWinner);
 
+	//Se il player ha vinto
 	if (bIsWinner)
 	{
 		UUserWidget* WinScreen = CreateWidget(this, WinScreenClass);
@@ -25,6 +28,7 @@ void AMyPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
 		}
 	}
 	else
+	//Se il player ha perso
 	{
 		UUserWidget* LoseScreen = CreateWidget(this, LoseScreenClass);
 
@@ -33,6 +37,7 @@ void AMyPlayerController::GameHasEnded(AActor* EndGameFocus, bool bIsWinner)
 			LoseScreen->AddToViewport();
 		}
 	}
+	//Restarto la partita
 	GetWorldTimerManager().SetTimer(RestartTimer, this, &AMyPlayerController::RestartGame, RestartDelay, false);
 
 }

@@ -131,14 +131,14 @@ void AEnemy::OnAttackOverlapBegin(UPrimitiveComponent* const OverlappedComponent
 				//Chiamo la funzione PawnKilled passandogli il player
 				GameMode->PawnKilled(Player);
 				//Animazione di morte del player
-				if (Player->DeathMontage)
+				/*if (Player->DeathMontage)
 				{
 					UAnimInstance* AnimInstance = Player->GetMesh()->GetAnimInstance();
 					if (AnimInstance)
 					{
 						AnimInstance->Montage_Play(Player->DeathMontage);
 					}
-				}
+				}*/
 				//Disabilito le collisioni e attivo il ragdoll
 				Player->EnableRagdoll();
 				GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);

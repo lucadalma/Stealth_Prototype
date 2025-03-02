@@ -95,6 +95,9 @@ private:
 	//Animazione di kill
 	UPROPERTY(EditDefaultsOnly, Category = "Stealth")
 	class UAnimMontage* StealthKillMontage;
+	//Health bar
+	UPROPERTY()
+	class UWidgetComponent* WidgetComponent;
 
 
 public:
@@ -104,8 +107,6 @@ public:
 	UFUNCTION(BlueprintPure)
 	bool IsDead() const;
 
-
-public:
 	//Ragdoll
 	void EnableRagdoll();
 
@@ -129,6 +130,8 @@ protected:
 	
 	// To add mapping context
 	virtual void BeginPlay();
+
+	virtual void Tick(float DeltaTime);
 
 private:
 

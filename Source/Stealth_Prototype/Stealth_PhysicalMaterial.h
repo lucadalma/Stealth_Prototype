@@ -15,6 +15,7 @@ class STEALTH_PROTOTYPE_API UStealth_PhysicalMaterial : public UPhysicalMaterial
 	GENERATED_BODY()
 
 public:
+	//Variabile del suono dei passi del player
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "PhysicalMaterial")
 	class USoundBase* FootStepSound = nullptr;
 

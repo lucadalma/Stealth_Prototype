@@ -19,7 +19,9 @@ public class Stealth_Prototype : ModuleRules
 			"NavigationSystem", 
 			"GameplayTasks",
 			"AIModule", 
-			"UMG"
+			"UMG", 
+			"Slate",
+			"SlateCore"
 		});
 	}
 }

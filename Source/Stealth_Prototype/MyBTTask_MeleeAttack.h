@@ -18,10 +18,13 @@ class STEALTH_PROTOTYPE_API UMyBTTask_MeleeAttack : public UBTTask_BlackboardBas
 	GENERATED_BODY()
 
 public:
+	//Costruttore
 	UMyBTTask_MeleeAttack();
+	//Execute Task
 	EBTNodeResult::Type ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory) override;
 
 private:
+	//Funzione bool
 	bool MontegeHasFinished(AEnemy* const enemy);
 	
 };

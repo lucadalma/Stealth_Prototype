@@ -12,15 +12,15 @@ class STEALTH_PROTOTYPE_API APatrolPath : public AActor
 	GENERATED_BODY()
 	
 public:	
-	// Sets default values for this actor's properties
+	//Costruttore
 	APatrolPath();
-
+	//Funzione Get point
 	FVector GetPatrolPoint(int const index) const;
-
+	//Funzione numero point
 	int Num() const;
 
 private:
-
+	//Array di Vector Dei patrol points
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="AI", meta=(MakeEditWidget="true", AllowPrivateAccess="true"))
 	TArray<FVector> PatrolPoints;
 

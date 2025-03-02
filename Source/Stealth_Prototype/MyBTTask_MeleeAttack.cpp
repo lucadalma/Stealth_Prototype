@@ -11,34 +11,43 @@
 #include "Animation/AnimMontage.h"
 #include "Animation/AnimInstance.h"
 
+//Costruttore
 UMyBTTask_MeleeAttack::UMyBTTask_MeleeAttack()
 {
 	NodeName = TEXT("Melee Attack");
 }
 
+//Execute Task
 EBTNodeResult::Type UMyBTTask_MeleeAttack::ExecuteTask(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory)
 {
+	//Fuori dal range
 	auto const OutOfRange = !OwnerComp.GetBlackboardComponent()->GetValueAsBool(GetSelectedBlackboardKey());
+	//Controllo se il player è fuori dal range
 	if (OutOfRange)
 	{
+
 		FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 		return EBTNodeResult::Succeeded;
 	}
-	
-	auto const* const cont = OwnerComp.GetAIOwner();
-	auto* const enemy = Cast<AEnemy>(cont->GetPawn());
+	//Ottengo AI
+	auto const* const AI = OwnerComp.GetAIOwner();
+	//Ottendo Enemy
+	auto* const Enemy = Cast<AEnemy>(AI->GetPawn());
 
-	if (auto* const icombat = Cast<ICombatInterface>(enemy))
+	//Controllo se ha l'interfacci di combsattimento
+	if (auto* const icombat = Cast<ICombatInterface>(Enemy))
 	{
-		if (MontegeHasFinished(enemy))
+		//Esegui MeleeAttack
+		if (MontegeHasFinished(Enemy))
 		{
-			icombat->Execute_MeleeAttack(enemy);
+			icombat->Execute_MeleeAttack(Enemy);
 		}
 	}
 	FinishLatentTask(OwnerComp, EBTNodeResult::Succeeded);
 	return EBTNodeResult::Type();
 }
 
+//Funzione bool che controlla se l'animazione è terminata
 bool UMyBTTask_MeleeAttack::MontegeHasFinished(AEnemy* const enemy)
 {
 	return enemy->GetMesh()->GetAnimInstance()->Montage_GetIsStopped(enemy->GetMontage());

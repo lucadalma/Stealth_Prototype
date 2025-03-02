@@ -6,9 +6,7 @@
 #include "Stealth_PrototypeCharacter.h"
 #include "Stealth_PrototypeEnemy.generated.h"
 
-/**
- * 
- */
+//CLASSE NON USATA
 UCLASS()
 class STEALTH_PROTOTYPE_API AStealth_PrototypeEnemy : public AStealth_PrototypeCharacter
 {
