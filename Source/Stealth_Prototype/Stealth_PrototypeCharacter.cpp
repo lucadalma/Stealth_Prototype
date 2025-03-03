@@ -296,37 +296,12 @@ bool AStealth_PrototypeCharacter::IsBehindEnemy(AEnemy* targetEnemy)
 //Funzione che esegue la StealthKill
 void AStealth_PrototypeCharacter::PerformStealthKill()
 {
-	//controllo se sta già eseguendo una stealth kill
 	if (bIsPerformingStealthKill) return;
-	//senno setto a true
 	bIsPerformingStealthKill = true;
 
-	//chiamo la funzione per trovare il nemico più vicino
 	FindStealthKillTarget();
 
-	//Controllo se effettivamente ha trovato qualcosa
-	if (!TargetEnemy)
-	{
-		bIsPerformingStealthKill = false;
-		return;
-	}
-
-	// Controllo se il player è dietro al nemico
-	if (!IsBehindEnemy(TargetEnemy))
-	{
-		bIsPerformingStealthKill = false;
-		return;
-	}
-
-	//Controllo sempre se è un nemico
-	AStealthAIController* AIController = Cast<AStealthAIController>(TargetEnemy->GetController());
-	if (!AIController) return;
-	UBlackboardComponent* BlackboardComp = AIController->GetBlackboardComponent();
-	if (!BlackboardComp) return;
-
-	//Controllo se il nemico sta vedendo il player in questo momento
-	bool bCanSeePlayer = BlackboardComp->GetValueAsBool("CanSeePlayer");
-	if (bCanSeePlayer)
+	if (!TargetEnemy || !IsBehindEnemy(TargetEnemy))
 	{
 		bIsPerformingStealthKill = false;
 		return;
@@ -334,13 +309,13 @@ void AStealth_PrototypeCharacter::PerformStealthKill()
 
 	// Blocca il movimento del giocatore e del nemico
 	TargetEnemy->GetCharacterMovement()->DisableMovement();
-	GetCharacterMovement()->DisableMovement();
+	GetCharacterMovement()->SetMovementMode(MOVE_Flying); // Evita che il Character Movement sovrascriva il Root Motion
 
-	//Ruoto il player verso il nemico
+	// Ruota il player verso il nemico
 	FRotator LookAtRotation = (TargetEnemy->GetActorLocation() - GetActorLocation()).Rotation();
-	SetActorRotation(FRotator(0.f, LookAtRotation.Yaw, 0.f)); // Mantieni solo la rotazione Yaw
+	SetActorRotation(FRotator(0.f, LookAtRotation.Yaw, 0.f));
 
-	//Riproduce animazione di Stealth Kill per il giocatore
+	// Riproduce animazione Stealth Kill
 	UAnimInstance* AnimInstance = GetMesh()->GetAnimInstance();
 	if (AnimInstance && StealthKillMontage)
 	{
@@ -350,10 +325,11 @@ void AStealth_PrototypeCharacter::PerformStealthKill()
 	// Riproduce animazione di morte del nemico
 	TargetEnemy->PlayDeathAnimation();
 
-	// Timer per completare la kill e riattivare il controllo
+	// Timer per terminare la Stealth Kill
 	FTimerHandle TimerHandle;
-	GetWorldTimerManager().SetTimer(TimerHandle, this, &AStealth_PrototypeCharacter::FinishStealthKill, 5.f, false);
+	GetWorldTimerManager().SetTimer(TimerHandle, this, &AStealth_PrototypeCharacter::FinishStealthKill, StealthKillMontage->GetPlayLength(), false);
 }
+
 
 
 //Funzione di fine stealth kill

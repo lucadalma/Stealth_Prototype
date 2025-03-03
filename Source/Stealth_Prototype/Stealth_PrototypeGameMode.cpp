@@ -4,6 +4,8 @@
 #include "Stealth_PrototypeCharacter.h"
 #include "MyPlayerController.h"
 #include "UObject/ConstructorHelpers.h"
+#include "Kismet/GameplayStatics.h"
+#include "Enemy.h"
 #include "EngineUtils.h"
 //Costruttore
 AStealth_PrototypeGameMode::AStealth_PrototypeGameMode()
@@ -31,5 +33,17 @@ void AStealth_PrototypeGameMode::EndGame(bool bIsPlayerWinner)
 		Controller->GameHasEnded(Controller->GetPawn(), bIsWinner);
 		Controller->SetIgnoreMoveInput(true);
 		Controller->SetIgnoreLookInput(true);
+	}
+	//Distruggo tutti i nemici per semplicità
+	if (bIsPlayerWinner)
+	{
+
+		TArray<AActor*> Enemies;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), AEnemy::StaticClass(), Enemies);
+
+		for (AActor* Enemy : Enemies)
+		{
+			Enemy->Destroy();
+		}
 	}
 }

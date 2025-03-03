@@ -1,6 +1,3 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
-
 #include "Enemy.h"
 #include "Components/BoxComponent.h"
 #include "Stealth_PrototypeCharacter.h"
@@ -12,27 +9,17 @@ AEnemy::AEnemy()
 {
 	PrimaryActorTick.bCanEverTick = true;
 
-	//Creo un BoxComponent per il pugno dell'Enemy
+	// Creazione del PunchCollisionBox
 	PunchCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("PunchCollisionBox"));
 
-	//Setto i valori di default
+	// Assicurati che il componente esista prima di lavorarci
 	if (PunchCollisionBox)
 	{
-		//Scala
-		PunchCollisionBox->SetBoxExtent({ 5.f,5.f,5.f }, false);
-		FAttachmentTransformRules const Rules{
-			//Componente viene spostato alla posizione dell'oggetto a cui è attaccato
-			EAttachmentRule::SnapToTarget,
-			//Componente eredita immediatamente la rotazione dell'oggetto target
-			EAttachmentRule::SnapToTarget,
-			//Componente mantiene la sua scala globale invece di adattarsi a quella del target
-			EAttachmentRule::KeepWorld,
-			false };
+		// Imposta la scala della collision box
+		PunchCollisionBox->SetBoxExtent({ 5.f, 5.f, 5.f }, false);
 
-		//Attacca il component alla mano
-		PunchCollisionBox->AttachToComponent(GetMesh(), Rules, "hand_r_socket");
-		//PunchCollisionBox->SetRelativeLocation({ -7.f, 0.f, 0.f });
-
+		// Attacca il componente direttamente allo scheletro nel costruttore
+		PunchCollisionBox->SetupAttachment(GetMesh(), TEXT("hand_r_socket"));
 	}
 
 }
@@ -42,8 +29,21 @@ void AEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 	//Collision boc del pugno aggiuno Begin Overlap e End Overlap
-	PunchCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnAttackOverlapBegin);
-	PunchCollisionBox->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnAttackOverlapEnd);
+
+	if (PunchCollisionBox)
+	{
+		// Solo a runtime possiamo modificare le regole di attacco
+		FAttachmentTransformRules const Rules(
+			EAttachmentRule::SnapToTarget,
+			EAttachmentRule::SnapToTarget,
+			EAttachmentRule::KeepWorld,
+			false
+		);
+
+		PunchCollisionBox->AttachToComponent(GetMesh(), Rules, TEXT("hand_r_socket"));
+		PunchCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &AEnemy::OnAttackOverlapBegin);
+		PunchCollisionBox->OnComponentEndOverlap.AddDynamic(this, &AEnemy::OnAttackOverlapEnd);
+	}
 
 
 }
@@ -153,7 +153,7 @@ void AEnemy::OnAttackOverlapBegin(UPrimitiveComponent* const OverlappedComponent
 //Overlap End
 void AEnemy::OnAttackOverlapEnd(UPrimitiveComponent* const OverlappedComponent, AActor* const OtherActor, UPrimitiveComponent* OtherComponent, int const OtherBodyIndex)
 {
-	
+
 }
 
 //Funzione per l'animazione di morte del player
@@ -192,4 +192,3 @@ void AEnemy::EnableRagdoll()
 		EnemyController->Destroy();
 	}
 }
-
